@@ -69,17 +69,16 @@ const getStudentByHallTicket = async (req, res) => {
 };
 
 // ===============================
+// ===============================
 // Update Student
 // ===============================
 const updateStudent = async (req, res) => {
   try {
-    const student = await Student.findOneAndUpdate(
-      {
-        hallTicketNo: req.params.hallTicketNo.toUpperCase(),
-      },
+    const student = await Student.findByIdAndUpdate(
+      req.params.id,
       req.body,
       {
-        new: true,
+        returnDocument: "after",
         runValidators: true,
       }
     );
@@ -109,9 +108,7 @@ const updateStudent = async (req, res) => {
 // ===============================
 const deleteStudent = async (req, res) => {
   try {
-    const student = await Student.findOneAndDelete({
-      hallTicketNo: req.params.hallTicketNo.toUpperCase(),
-    });
+    const student = await Student.findByIdAndDelete(req.params.id);
 
     if (!student) {
       return res.status(404).json({

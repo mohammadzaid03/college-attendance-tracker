@@ -16,11 +16,19 @@ router
   .post(createStudent)
   .get(getAllStudents);
 
-// Get, Update & Delete Student by Hall Ticket
+// Get Student by Hall Ticket
 router
   .route("/:hallTicketNo")
-  .get(getStudentByHallTicket)
-  .put(updateStudent)
+  .get(getStudentByHallTicket);
+
+// Update Student by MongoDB _id
+router
+  .route("/update/:id")
+  .put(updateStudent);
+
+// Delete Student by MongoDB _id
+router
+  .route("/:id")
   .delete(deleteStudent);
 
 module.exports = router;

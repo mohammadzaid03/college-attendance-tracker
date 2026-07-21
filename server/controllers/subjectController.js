@@ -73,15 +73,13 @@ const getSubjectByCode = async (req, res) => {
 // ===============================
 const updateSubject = async (req, res) => {
   try {
-    const subject = await Subject.findOneAndUpdate(
-      {
-        subjectCode: req.params.subjectCode.toUpperCase(),
-      },
+    const subject = await Subject.findByIdAndUpdate(
+      req.params.id,
       req.body,
-      {
-        new: true,
-        runValidators: true,
-      }
+     {
+  returnDocument: "after",
+  runValidators: true,
+}
     );
 
     if (!subject) {
@@ -109,9 +107,7 @@ const updateSubject = async (req, res) => {
 // ===============================
 const deleteSubject = async (req, res) => {
   try {
-    const subject = await Subject.findOneAndDelete({
-      subjectCode: req.params.subjectCode.toUpperCase(),
-    });
+    const subject = await Subject.findByIdAndDelete(req.params.id);
 
     if (!subject) {
       return res.status(404).json({

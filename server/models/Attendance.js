@@ -2,52 +2,41 @@ const mongoose = require("mongoose");
 
 const attendanceSchema = new mongoose.Schema(
   {
-    // Attendance Date
-    date: {
-      type: Date,
-      required: true,
-    },
-
-    // Day Name (Monday, Tuesday...)
-    day: {
-      type: String,
-      required: true,
-    },
-
-    // Student Reference
-    studentId: {
+    student: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Student",
       required: true,
     },
 
-    // Overall Attendance Status
-    overallStatus: {
+    subject: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Subject",
+      required: true,
+    },
+
+    date: {
+      type: Date,
+      required: true,
+    },
+
+    status: {
       type: String,
       enum: ["Present", "Absent"],
       required: true,
     },
 
-    // Subject-wise Attendance
-    subjects: [
-      {
-        subjectId: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "Subject",
-          required: true,
-        },
-
-        status: {
-          type: String,
-          enum: ["Present", "Absent"],
-          required: true,
-        },
-      },
-    ],
+    remarks: {
+      type: String,
+      trim: true,
+      default: "",
+    },
   },
   {
     timestamps: true,
   }
 );
 
-module.exports = mongoose.model("Attendance", attendanceSchema);
+module.exports = mongoose.model(
+  "Attendance",
+  attendanceSchema
+);

@@ -5,7 +5,7 @@ const router = express.Router();
 const {
   createAttendance,
   getAllAttendance,
-  getAttendanceByDate,
+  getAttendanceById,
   updateAttendance,
   deleteAttendance,
 } = require("../controllers/attendanceController");
@@ -16,10 +16,10 @@ router
   .post(createAttendance)
   .get(getAllAttendance);
 
-// Get, Update & Delete Attendance by Date
+// Get, Update & Delete Attendance by ID
 router
-  .route("/:date")
-  .get(getAttendanceByDate)
+  .route("/:id")
+  .get(getAttendanceById)
   .put(updateAttendance)
   .delete(deleteAttendance);
 

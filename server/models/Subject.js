@@ -16,6 +16,12 @@ const subjectSchema = new mongoose.Schema(
       trim: true,
     },
 
+    branch: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
     semester: {
       type: String,
       required: true,
@@ -26,6 +32,24 @@ const subjectSchema = new mongoose.Schema(
       type: Number,
       required: true,
       min: 0,
+    },
+
+    facultyName: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
+    subjectType: {
+      type: String,
+      enum: ["Theory", "Lab"],
+      default: "Theory",
+    },
+
+    status: {
+      type: String,
+      enum: ["Active", "Inactive"],
+      default: "Active",
     },
 
     subjectLevel: [

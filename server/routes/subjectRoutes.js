@@ -16,10 +16,14 @@ router
   .post(createSubject)
   .get(getAllSubjects);
 
-// Get, Update & Delete Subject by Subject Code
+// Get Subject by Subject Code
 router
   .route("/:subjectCode")
-  .get(getSubjectByCode)
+  .get(getSubjectByCode);
+
+// Update & Delete Subject by ID
+router
+  .route("/:id")
   .put(updateSubject)
   .delete(deleteSubject);
 

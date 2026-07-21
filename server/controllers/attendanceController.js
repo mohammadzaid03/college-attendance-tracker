@@ -9,10 +9,11 @@ const createAttendance = async (req, res) => {
 
     res.status(201).json({
       success: true,
+      message: "Attendance created successfully",
       data: attendance,
     });
   } catch (error) {
-    res.status(400).json({
+    res.status(500).json({
       success: false,
       message: error.message,
     });
@@ -25,8 +26,8 @@ const createAttendance = async (req, res) => {
 const getAllAttendance = async (req, res) => {
   try {
     const attendance = await Attendance.find()
-      .populate("studentId")
-      .populate("subjects.subjectId");
+      .populate("student")
+      .populate("subject");
 
     res.status(200).json({
       success: true,
@@ -42,15 +43,13 @@ const getAllAttendance = async (req, res) => {
 };
 
 // ===============================
-// Get Attendance By Date
+// Get Attendance By ID
 // ===============================
-const getAttendanceByDate = async (req, res) => {
+const getAttendanceById = async (req, res) => {
   try {
-    const attendance = await Attendance.findOne({
-      date: new Date(req.params.date),
-    })
-      .populate("studentId")
-      .populate("subjects.subjectId");
+    const attendance = await Attendance.findById(req.params.id)
+      .populate("student")
+      .populate("subject");
 
     if (!attendance) {
       return res.status(404).json({
@@ -76,13 +75,11 @@ const getAttendanceByDate = async (req, res) => {
 // ===============================
 const updateAttendance = async (req, res) => {
   try {
-    const attendance = await Attendance.findOneAndUpdate(
-      {
-        date: new Date(req.params.date),
-      },
+    const attendance = await Attendance.findByIdAndUpdate(
+      req.params.id,
       req.body,
       {
-        new: true,
+        returnDocument: "after",
         runValidators: true,
       }
     );
@@ -96,10 +93,11 @@ const updateAttendance = async (req, res) => {
 
     res.status(200).json({
       success: true,
+      message: "Attendance updated successfully",
       data: attendance,
     });
   } catch (error) {
-    res.status(400).json({
+    res.status(500).json({
       success: false,
       message: error.message,
     });
@@ -111,9 +109,7 @@ const updateAttendance = async (req, res) => {
 // ===============================
 const deleteAttendance = async (req, res) => {
   try {
-    const attendance = await Attendance.findOneAndDelete({
-      date: new Date(req.params.date),
-    });
+    const attendance = await Attendance.findByIdAndDelete(req.params.id);
 
     if (!attendance) {
       return res.status(404).json({
@@ -137,7 +133,7 @@ const deleteAttendance = async (req, res) => {
 module.exports = {
   createAttendance,
   getAllAttendance,
-  getAttendanceByDate,
+  getAttendanceById,
   updateAttendance,
   deleteAttendance,
 };

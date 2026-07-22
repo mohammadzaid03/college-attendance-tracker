@@ -8,6 +8,9 @@ const {
   getAttendanceById,
   updateAttendance,
   deleteAttendance,
+  saveSubjectAttendance,
+  getSubjectAttendanceSummary,
+  getAttendanceHistory,
 } = require("../controllers/attendanceController");
 
 // Create Attendance & Get All Attendance
@@ -16,7 +19,25 @@ router
   .post(createAttendance)
   .get(getAllAttendance);
 
-// Get, Update & Delete Attendance by ID
+// Subject Summary
+router.get(
+  "/subject-summary",
+  getSubjectAttendanceSummary
+);
+
+// Save Subject Attendance
+router.post(
+  "/subject",
+  saveSubjectAttendance
+);
+
+// Attendance History
+router.get(
+  "/history/:subjectId",
+  getAttendanceHistory
+);
+
+// Get, Update & Delete Attendance
 router
   .route("/:id")
   .get(getAttendanceById)
@@ -24,3 +45,4 @@ router
   .delete(deleteAttendance);
 
 module.exports = router;
+

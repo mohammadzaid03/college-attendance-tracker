@@ -1,5 +1,8 @@
-function SubjectAttendanceTable({ subjects }) {
-  return (
+function SubjectAttendanceTable({
+  subjects,
+  onView,
+}) {
+    return (
     <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
 
       <div className="overflow-x-auto">
@@ -77,34 +80,43 @@ function SubjectAttendanceTable({ subjects }) {
                   </td>
 
                   <td className="px-4 py-4 text-center">
-                    0
+                  {subject.conducted}
                   </td>
 
                   <td className="px-4 py-4 text-center">
-                    0
+                  {subject.attended}
                   </td>
-
                   <td className="px-4 py-4 text-center">
-                    0%
-                  </td>
-
-                  <td className="px-4 py-4 text-center">
-
-                    <span className="bg-red-100 text-red-600 px-3 py-1 rounded-full text-sm font-medium">
-
-                      Low
-
-                    </span>
-
+                  {subject.percentage}%
                   </td>
 
                   <td className="px-4 py-4 text-center">
 
-                    <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1 rounded-lg">
+                    <span
+  className={`px-3 py-1 rounded-full text-sm font-medium
+    ${
+      subject.status === "Excellent"
+        ? "bg-green-100 text-green-700"
+        : subject.status === "Good"
+        ? "bg-emerald-100 text-emerald-700"
+        : subject.status === "Average"
+        ? "bg-yellow-100 text-yellow-700"
+        : "bg-red-100 text-red-700"
+    }`}
+>
+  {subject.status}
+</span>
 
-                      View
+                  </td>
 
-                    </button>
+                  <td className="px-4 py-4 text-center">
+
+                   <button
+  onClick={() => onView(subject._id)}
+  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1 rounded-lg"
+>
+  View
+</button>
 
                   </td>
 

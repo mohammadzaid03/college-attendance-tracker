@@ -11,6 +11,7 @@ const {
   saveSubjectAttendance,
   getSubjectAttendanceSummary,
   getAttendanceHistory,
+  getPersonalAttendance,
 } = require("../controllers/attendanceController");
 
 // Create Attendance & Get All Attendance
@@ -36,6 +37,9 @@ router.get(
   "/history/:subjectId",
   getAttendanceHistory
 );
+
+router.get("/personal/:studentId", 
+  getPersonalAttendance);
 
 // Get, Update & Delete Attendance
 router

@@ -48,3 +48,10 @@ export const getAttendanceHistory = async (subjectId) => {
 
   return response.data;
 };
+
+export const getPersonalAttendance = async (studentId) => {
+  const response = await API.get(
+    `/attendance/personal/${studentId}`
+  );
+  return response.data;
+};

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import MainLayout from "../../layouts/MainLayout/MainLayout";
 import Loader from "../../components/Loader/Loader";
@@ -14,6 +15,7 @@ import {
 
 
 function Attendance() {
+  const navigate = useNavigate();
   const [attendance, setAttendance] = useState([]);
 
   const [loading, setLoading] = useState(true);
@@ -228,7 +230,8 @@ const activeFilters =
       {/* Mark Attendance */}
 
       <button
-        onClick={() => {
+        onClick={() => {{/* Attendance Planner */}
+
           setSelectedAttendance(null);
           setOpenModal(true);
         }}
@@ -236,6 +239,13 @@ const activeFilters =
       >
         + Mark Attendance
       </button>
+
+      <button
+  onClick={() => navigate("/attendance-level2")}
+  className="border border-blue-600 text-blue-600 hover:bg-blue-50 rounded-xl px-5 py-2"
+>
+  Subject Attendance
+</button>
 
     </div>
 

@@ -316,7 +316,111 @@ const getAttendanceHistory = async (req, res) => {
   }
 };
 
+
+// =======================================
+// Get Personal Attendance By Student
+// =======================================
+
+const getPersonalAttendance = async (req, res) => {
+  try {
+    const { studentId } = req.params;
+
+    const attendance = await Attendance.find({
+      student: studentId,
+    }).populate("subject", "subjectName subjectCode");
+
+    // Overall calculation
+    const totalClasses = attendance.length;
+
+    const totalPresent = attendance.filter(
+      (record) => record.status === "Present"
+    ).length;
+
+    const totalAbsent = attendance.filter(
+      (record) => record.status === "Absent"
+    ).length;
+
+    const overallPercentage =
+      totalClasses === 0
+        ? 0
+        : Number(
+            ((totalPresent / totalClasses) * 100).toFixed(2)
+          );
+
+    // Subject-wise calculation
+    const subjectMap = {};
+
+    attendance.forEach((record) => {
+      const subjectId = record.subject._id.toString();
+
+      if (!subjectMap[subjectId]) {
+        subjectMap[subjectId] = {
+          _id: record.subject._id,
+          subjectName: record.subject.subjectName,
+          subjectCode: record.subject.subjectCode,
+          conducted: 0,
+          attended: 0,
+        };
+      }
+
+      subjectMap[subjectId].conducted += 1;
+
+      if (record.status === "Present") {
+        subjectMap[subjectId].attended += 1;
+      }
+    });
+
+    const subjects = Object.values(subjectMap).map((subject) => {
+      const percentage =
+        subject.conducted === 0
+          ? 0
+          : Number(
+              (
+                (subject.attended / subject.conducted) *
+                100
+              ).toFixed(2)
+            );
+
+      let status = "Low";
+
+      if (percentage >= 90) {
+        status = "Excellent";
+      } else if (percentage >= 75) {
+        status = "Good";
+      } else if (percentage >= 65) {
+        status = "Average";
+      }
+
+      return {
+        ...subject,
+        percentage,
+        status,
+      };
+    });
+
+    res.status(200).json({
+      success: true,
+      data: {
+        totalClasses,
+        totalPresent,
+        totalAbsent,
+        overallPercentage,
+        subjects,
+      },
+    });
+
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
+
   createAttendance,
   getAllAttendance,
   getAttendanceById,
@@ -325,4 +429,5 @@ module.exports = {
   saveSubjectAttendance,
   getSubjectAttendanceSummary,
   getAttendanceHistory,
+  getPersonalAttendance,
 };

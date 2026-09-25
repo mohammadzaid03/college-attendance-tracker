@@ -3,6 +3,7 @@ import Sidebar from "../Sidebar/Sidebar";
 import Footer from "../Footer/Footer";
 
 function MainLayout({ children }) {
+  
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
       <Navbar />

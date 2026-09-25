@@ -68,3 +68,83 @@ body {
   padding: 10px;
   font-size: 14px;
 }
+
+.calendar-empty {
+  min-height: 70px;
+}
+
+.exam-day {
+  border: 2px solid #333;
+  font-weight: 600;
+}
+
+.calendar-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin-top: 20px;
+  font-size: 14px;
+}
+
+.calendar-legend > div {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.legend-box {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.working-legend {
+  background: #e8f5e9;
+}
+
+.holiday-legend {
+  background: #f5f5f5;
+}
+
+.exam-legend {
+  background: #eeeeee;
+  border: 2px solid #333;
+}
+
+.mid-legend {
+  background: #fff;
+}
+
+
+.special-day-form {
+  margin-bottom: 20px;
+  padding: 16px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.special-day-form h3 {
+  margin-top: 0;
+  margin-bottom: 12px;
+}
+
+.special-day-fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.special-day-fields input,
+.special-day-fields select {
+  padding: 9px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+
+.special-day-fields button {
+  padding: 9px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}

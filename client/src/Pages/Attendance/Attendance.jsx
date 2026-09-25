@@ -242,9 +242,16 @@ const activeFilters =
 
       <button
   onClick={() => navigate("/attendance-level2")}
-  className="border border-blue-600 text-blue-600 hover:bg-blue-50 rounded-xl px-5 py-2"
+        className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl px-5 py-2 shadow"
 >
   Subject Attendance
+</button>
+
+<button onClick={() => navigate("/attendance-level3")}
+        className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl px-5 py-2 shadow"
+>
+
+  Personal Attendance
 </button>
 
     </div>

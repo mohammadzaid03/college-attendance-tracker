@@ -14,7 +14,7 @@ function Dashboard() {
         const response = await getDashboardData();
         setDashboard(response.data);
       } catch (error) {
-        console.error(error);
+        console.error("Dashboard Error:", error);
       }
     };
 
@@ -31,55 +31,171 @@ function Dashboard() {
     );
   }
 
+  const {
+    semesterProgress,
+    currentPhase,
+    nextEvent,
+    officialAttendance,
+    presentAbsentDays,
+    todayStatus,
+    personalAttendance,
+  } = dashboard;
+
   return (
     <MainLayout>
-      <h1 className="text-3xl font-bold mb-8">
-        Dashboard
-      </h1>
 
+      {/* Header */}
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold">
+          Dashboard
+        </h1>
+
+        <p className="text-gray-500 mt-2">
+          {semesterProgress.semester} •{" "}
+          {semesterProgress.academicYear}
+        </p>
+      </div>
+
+
+      {/* Semester Progress */}
+      <div className="bg-white rounded-xl shadow p-6 mb-6">
+
+        <div className="flex justify-between items-center mb-4">
+
+          <div>
+            <h2 className="text-xl font-semibold">
+              Semester Progress
+            </h2>
+
+            <p className="text-gray-500">
+              {semesterProgress.completedDays} days completed
+            </p>
+          </div>
+
+          <div className="text-2xl font-bold">
+            {semesterProgress.percentage}%
+          </div>
+
+        </div>
+
+        <div className="w-full bg-gray-200 rounded-full h-3">
+
+          <div
+            className="bg-blue-600 h-3 rounded-full"
+            style={{
+              width: `${semesterProgress.percentage}%`,
+            }}
+          />
+
+        </div>
+
+        <div className="flex justify-between text-sm text-gray-500 mt-3">
+
+          <span>
+            Completed: {semesterProgress.completedDays}
+          </span>
+
+          <span>
+            Remaining: {semesterProgress.remainingDays}
+          </span>
+
+        </div>
+
+      </div>
+
+
+      {/* Attendance Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
 
         <Card
           title="Official Attendance"
-          value={`${dashboard.officialAttendance.percentage}%`}
+          value={`${officialAttendance.percentage}%`}
         />
 
         <Card
           title="Personal Attendance"
-          value={`${dashboard.personalAttendance.percentage}%`}
-        />
-
-        <Card
-          title="Semester Progress"
-          value={`${dashboard.semesterProgress.percentage}%`}
-        />
-
-        <Card
-          title="Current Phase"
-          value={dashboard.currentPhase.name}
-        />
-
-        <Card
-          title="Next Event"
-          value={dashboard.nextEvent.name}
-        />
-
-        <Card
-          title="Days Left"
-          value={dashboard.nextEvent.daysLeft}
+          value={`${personalAttendance.percentage}%`}
         />
 
         <Card
           title="Present Days"
-          value={dashboard.presentAbsentDays.presentDays}
+          value={presentAbsentDays.presentDays}
         />
 
         <Card
           title="Today's Status"
-          value={dashboard.todayStatus.status}
+          value={todayStatus.status}
         />
 
       </div>
+
+
+      {/* Academic Information */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+
+        <Card
+          title="Current Phase"
+          value={currentPhase.name}
+        />
+
+        <Card
+          title="Next Event"
+          value={nextEvent.name}
+        />
+
+        <Card
+          title="Days Left"
+          value={nextEvent.daysLeft}
+        />
+
+      </div>
+
+
+      {/* Attendance Details */}
+      <div className="bg-white rounded-xl shadow p-6 mt-6">
+
+        <h2 className="text-xl font-semibold mb-4">
+          Attendance Summary
+        </h2>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+          <div>
+            <p className="text-gray-500">
+              Total Days
+            </p>
+
+            <p className="text-2xl font-bold">
+              {presentAbsentDays.totalDays}
+            </p>
+          </div>
+
+
+          <div>
+            <p className="text-gray-500">
+              Present
+            </p>
+
+            <p className="text-2xl font-bold">
+              {presentAbsentDays.presentDays}
+            </p>
+          </div>
+
+
+          <div>
+            <p className="text-gray-500">
+              Absent
+            </p>
+
+            <p className="text-2xl font-bold">
+              {presentAbsentDays.absentDays}
+            </p>
+          </div>
+
+        </div>
+
+      </div>
+
     </MainLayout>
   );
 }

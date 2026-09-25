@@ -1,7 +1,8 @@
-
 import { useEffect, useState } from "react";
 import { getStudents } from "../../services/studentService";
 import { getPersonalAttendance } from "../../services/attendanceService";
+
+
 
 // =======================================
 // Academic Calendar Helper Functions
@@ -21,25 +22,111 @@ const isDefaultWorkingDay = (date) => {
   return day >= 1 && day <= 4;
 };
 
-const generateCalendarDays = (year, month) => {
-  const daysInMonth = new Date(
+const academicPeriods = [
+  {
+    name: "Mid-1 Classes",
+    start: "2026-08-03",
+    end: "2026-09-26",
+    type: "classes",
+  },
+  {
+    name: "Mid-1 Exams",
+    start: "2026-09-28",
+    end: "2026-10-03",
+    type: "exam",
+  },
+  {
+    name: "Mid-2 Classes",
+    start: "2026-10-05",
+    end: "2026-11-28",
+    type: "classes",
+  },
+  {
+    name: "Mid-2 Exams",
+    start: "2026-11-30",
+    end: "2026-12-05",
+    type: "exam",
+  },
+];
+
+
+const getAcademicPeriod = (date) => {
+  const currentDate = new Date(date);
+  currentDate.setHours(0, 0, 0, 0);
+
+  for (const period of academicPeriods) {
+    const startDate = new Date(period.start);
+    const endDate = new Date(period.end);
+
+    startDate.setHours(0, 0, 0, 0);
+    endDate.setHours(23, 59, 59, 999);
+
+    if (
+      currentDate >= startDate &&
+      currentDate <= endDate
+    ) {
+      return period;
+    }
+  }
+
+  return null;
+};
+const getSpecialDay = (date, specialDays) => {
+  const dateString = new Date(date)
+    .toISOString()
+    .split("T")[0];
+
+  return specialDays.find(
+    (item) => item.date === dateString
+  );
+};
+
+
+const generateCalendarDays = (year, month, specialDays) => {
+    const daysInMonth = new Date(
     year,
     month + 1,
     0
   ).getDate();
 
+  const firstDay = new Date(year, month, 1).getDay();
+
+  // Convert Sunday = 0 to Monday = 0
+  const startingPosition = firstDay === 0 ? 6 : firstDay - 1;
+
   const days = [];
 
+  // Empty spaces before the first day
+  for (let i = 0; i < startingPosition; i++) {
+    days.push({
+      empty: true,
+      id: `empty-${i}`,
+    });
+  }
+
+  // Actual calendar days
   for (let day = 1; day <= daysInMonth; day++) {
     const date = new Date(year, month, day);
 
-    days.push({
-      date,
-      day,
-      status: isDefaultWorkingDay(date)
-        ? "Working"
-        : "Holiday",
-    });
+const academicPeriod = getAcademicPeriod(date);
+const specialDay = getSpecialDay(date, specialDays);
+days.push({
+  date,
+  day,
+  status: specialDay
+    ? specialDay.status
+    : isDefaultWorkingDay(date)
+    ? "Working"
+    : "Holiday",
+  specialDay: specialDay || null,
+  academicPeriod: academicPeriod
+    ? academicPeriod.name
+    : null,
+  academicType: academicPeriod
+    ? academicPeriod.type
+    : null,
+  empty: false,
+});
   }
 
   return days;
@@ -49,28 +136,57 @@ const generateCalendarDays = (year, month) => {
 // Level 3 Component
 // =======================================
 
-function Level3() {
-  // =======================================
-  // State
-  // =======================================
 
+
+function Level3() {
   const [students, setStudents] = useState([]);
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [attendanceData, setAttendanceData] = useState(null);
   const [targetPercentage, setTargetPercentage] = useState(75);
 
-  // Academic Calendar State
   const [selectedMonth, setSelectedMonth] = useState(8);
   const [selectedYear, setSelectedYear] = useState(2026);
+
+const [specialDays, setSpecialDays] = useState([]);
+const [specialDate, setSpecialDate] = useState("");
+const [specialStatus, setSpecialStatus] = useState("Working");
+const [specialReason, setSpecialReason] = useState("");
+
+  // ADD THIS HERE
+  const handleAddSpecialDay = () => {
+    if (!specialDate) {
+      alert("Please select a date");
+      return;
+    }
+
+    const newSpecialDay = {
+      date: specialDate,
+      status: specialStatus,
+      reason: specialReason.trim() || "Special Day",
+    };
+
+    setSpecialDays((prev) => [
+      ...prev.filter((item) => item.date !== specialDate),
+      newSpecialDay,
+    ]);
+
+    setSpecialDate("");
+    setSpecialStatus("Working");
+    setSpecialReason("");
+  };
+
+  // rest of your code...
+
 
   // =======================================
   // Generate Calendar Data
   // =======================================
 
-  const calendarDays = generateCalendarDays(
-    selectedYear,
-    selectedMonth
-  );
+ const calendarDays = generateCalendarDays(
+  selectedYear,
+  selectedMonth,
+  specialDays
+);
 
   // =======================================
   // Fetch Students
@@ -224,6 +340,7 @@ function Level3() {
 
   // =======================================
   // UI
+  
   // =======================================
 
   return (
@@ -702,76 +819,145 @@ function Level3() {
         </div>
       )}
 
-      {/* Academic Calendar */}
-<div className="level3-section">
-  <h2>📅 Academic Calendar</h2>
+        {/* Academic Calendar */}
+      <div className="level3-section">
+        <h2>📅 Academic Calendar</h2>
 
-  <div className="calendar-controls">
-    <select
-      value={selectedMonth}
-      onChange={(e) => setSelectedMonth(Number(e.target.value))}
-    >
-      {[
-        "January",
-        "February",
-        "March",
-        "April",
-        "May",
-        "June",
-        "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December",
-      ].map((month, index) => (
-        <option key={index} value={index}>
-          {month}
-        </option>
-      ))}
-    </select>
+        <div className="calendar-controls">
+          <select
+            value={selectedMonth}
+            onChange={(e) => setSelectedMonth(Number(e.target.value))}
+          >
+            {[
+              "January",
+              "February",
+              "March",
+              "April",
+              "May",
+              "June",
+              "July",
+              "August",
+              "September",
+              "October",
+              "November",
+              "December",
+            ].map((month, index) => (
+              <option key={index} value={index}>
+                {month}
+              </option>
+            ))}
+          </select>
 
-    <select
-      value={selectedYear}
-      onChange={(e) => setSelectedYear(Number(e.target.value))}
-    >
-      <option value={2026}>2026</option>
-      <option value={2027}>2027</option>
-    </select>
-  </div>
+          <select
+            value={selectedYear}
+            onChange={(e) => setSelectedYear(Number(e.target.value))}
+          >
+            <option value={2026}>2026</option>
+            <option value={2027}>2027</option>
+          </select>
+        </div>
 
-  <div className="calendar-grid">
-    <div className="calendar-weekday">Mon</div>
-<div className="calendar-weekday">Tue</div>
-<div className="calendar-weekday">Wed</div>
-<div className="calendar-weekday">Thu</div>
-<div className="calendar-weekday">Fri</div>
-<div className="calendar-weekday">Sat</div>
-<div className="calendar-weekday">Sun</div>
-    {calendarDays.map((item) => (
-      <div
-        key={item.day}
-        className={`calendar-day ${
-          item.status === "Working"
-            ? "working-day"
-            : "holiday-day"
-        }`}
-      >
-        <strong>{item.day}</strong>
+        <div className="special-day-form">
+          <h3>Add Special Day</h3>
 
-        <span>
-          {item.status === "Working"
-            ? "Working"
-            : "Holiday"}
-        </span>
+          <div className="special-day-fields">
+            <input
+              type="date"
+              value={specialDate}
+              onChange={(e) => setSpecialDate(e.target.value)}
+            />
+
+            <select
+              value={specialStatus}
+              onChange={(e) => setSpecialStatus(e.target.value)}
+            >
+              <option value="Working">Working</option>
+              <option value="Holiday">Holiday</option>
+            </select>
+
+            <input
+              type="text"
+              placeholder="Reason"
+              value={specialReason}
+              onChange={(e) => setSpecialReason(e.target.value)}
+            />
+
+            <button onClick={handleAddSpecialDay}>
+              Add Special Day
+            </button>
+          </div>
+        </div>
+
+        <div className="calendar-grid">
+          <div className="calendar-weekday">Mon</div>
+          <div className="calendar-weekday">Tue</div>
+          <div className="calendar-weekday">Wed</div>
+          <div className="calendar-weekday">Thu</div>
+          <div className="calendar-weekday">Fri</div>
+          <div className="calendar-weekday">Sat</div>
+          <div className="calendar-weekday">Sun</div>
+
+          {calendarDays.map((item) => {
+            if (item.empty) {
+              return (
+                <div
+                  key={item.id}
+                  className="calendar-empty"
+                ></div>
+              );
+            }
+
+            return (
+              <div
+                key={item.day}
+                className={`calendar-day ${
+                  item.status === "Working"
+                    ? "working-day"
+                    : "holiday-day"
+                } ${
+                  item.academicType === "exam"
+                    ? "exam-day"
+                    : ""
+                }`}
+              >
+                <strong>{item.day}</strong>
+
+                <span>
+                  {item.academicPeriod
+                    ? item.academicPeriod
+                    : item.status}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Calendar Legend */}
+        <div className="calendar-legend">
+          <div>
+            <span className="legend-box working-legend"></span>
+            Working Day
+          </div>
+
+          <div>
+            <span className="legend-box holiday-legend"></span>
+            Holiday
+          </div>
+
+          <div>
+            <span className="legend-box exam-legend"></span>
+            Exam Week
+          </div>
+
+          <div>
+            <span className="legend-box mid-legend"></span>
+            Academic Classes
+          </div>
+        </div>
       </div>
-    ))}
-  </div>
-</div>
 
     </div>
   );
 }
 
 export default Level3;
-

@@ -1,3 +1,4 @@
+
 const Attendance = require("../models/Attendance");
 
 // Get Official Attendance Percentage
@@ -7,7 +8,7 @@ const getOfficialAttendance = async () => {
   const totalDays = attendance.length;
 
   const presentDays = attendance.filter(
-    (day) => day.overallStatus === "Present"
+    (day) => day.status === "Present"
   ).length;
 
   const percentage =
@@ -22,6 +23,7 @@ const getOfficialAttendance = async () => {
   };
 };
 
+
 // Get Present & Absent Days
 const getPresentAbsentDays = async () => {
   const attendance = await Attendance.find();
@@ -29,11 +31,11 @@ const getPresentAbsentDays = async () => {
   const totalDays = attendance.length;
 
   const presentDays = attendance.filter(
-    (day) => day.overallStatus === "Present"
+    (day) => day.status === "Present"
   ).length;
 
   const absentDays = attendance.filter(
-    (day) => day.overallStatus === "Absent"
+    (day) => day.status === "Absent"
   ).length;
 
   return {
@@ -43,14 +45,20 @@ const getPresentAbsentDays = async () => {
   };
 };
 
+
 // Get Today's Attendance Status
 const getTodayStatus = async () => {
-  const today = new Date();
+  const startOfDay = new Date();
+  startOfDay.setHours(0, 0, 0, 0);
 
-  today.setHours(0, 0, 0, 0);
+  const endOfDay = new Date();
+  endOfDay.setHours(23, 59, 59, 999);
 
   const attendance = await Attendance.findOne({
-    date: today,
+    date: {
+      $gte: startOfDay,
+      $lte: endOfDay,
+    },
   });
 
   if (!attendance) {
@@ -60,27 +68,28 @@ const getTodayStatus = async () => {
   }
 
   return {
-    status: attendance.overallStatus,
+    status: attendance.status,
   };
 };
+
 
 // Get Personal Attendance
 const getPersonalAttendance = async () => {
   const attendance = await Attendance.find();
 
+  const totalDays = attendance.length;
+
   const presentDays = attendance.filter(
-    (day) => day.overallStatus === "Present"
+    (day) => day.status === "Present"
   ).length;
 
-  const targetDays = 92;
-
-  const percentage = Math.min(
-    100,
-    Math.round((presentDays / targetDays) * 100)
-  );
+  const percentage =
+    totalDays === 0
+      ? 0
+      : Math.round((presentDays / totalDays) * 100);
 
   return {
-    targetDays,
+    totalDays,
     presentDays,
     percentage,
   };
@@ -93,3 +102,4 @@ module.exports = {
   getTodayStatus,
   getPersonalAttendance,
 };
+
